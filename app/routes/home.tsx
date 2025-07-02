@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Route } from "./+types/home";
-import { data, useSubmit } from "react-router";
+import { useSubmit } from "react-router";
 import { PrefectureSelect } from "~/components/PrefectureSelect";
 import { WeatherCard } from "~/components/WeatherCard";
 import { LoadingSpinner, ErrorMessage } from "~/components/LoadingSpinner";
