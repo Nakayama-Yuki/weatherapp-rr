@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { Route } from "./+types/home";
-import { useSubmit } from "react-router";
+import { useSubmit, useNavigation } from "react-router";
 import { PrefectureSelect } from "~/components/PrefectureSelect";
 import { WeatherCard } from "~/components/WeatherCard";
 import { LoadingSpinner, ErrorMessage } from "~/components/LoadingSpinner";
@@ -45,15 +45,11 @@ export async function action({
 
 export default function Home({ actionData }: Route.ComponentProps) {
   const [selectedPrefecture, setSelectedPrefecture] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
   const submit = useSubmit();
+  const navigation = useNavigation();
 
-  // actionDataが更新されたときにローディング状態をリセット
-  useEffect(() => {
-    if (actionData) {
-      setIsLoading(false);
-    }
-  }, [actionData]);
+  // React Routerのnavigation状態から派生値として計算
+  const isLoading = navigation.state === "submitting";
 
   // フォーム送信ハンドラ
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -63,8 +59,6 @@ export default function Home({ actionData }: Route.ComponentProps) {
       return;
     }
 
-    setIsLoading(true);
-
     // useSubmitを使用してプログラム的に送信
     const formData = new FormData();
     formData.append("prefecture", selectedPrefecture);
@@ -73,7 +67,7 @@ export default function Home({ actionData }: Route.ComponentProps) {
 
   // エラーリセット
   const handleRetry = () => {
-    setIsLoading(false);
+    // React Routerが状態を管理するため、特別な処理は不要
   };
 
   return (
