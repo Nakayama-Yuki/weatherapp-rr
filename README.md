@@ -1,52 +1,113 @@
-# Welcome to React Router!
+# 天気予報アプリ 🌤️
 
-A modern, production-ready template for building full-stack React applications using React Router.
+OpenWeatherMap API を使用した日本の都道府県別天気予報アプリです。React Router 7、React 19、TailwindCSS v4 を使用して構築されています。
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## 機能
 
-## Features
+- � 日本全国の都道府県別天気情報表示
+- 🌡️ 現在の気温、体感温度、最高・最低気温
+- 💨 風速、湿度、気圧などの詳細情報
+- 🌈 直感的で美しい UI/UX
+- 📱 レスポンシブデザイン対応
+- ⚡️ サーバーサイドレンダリング（SSR）
+- � リアルタイムデータ取得
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## 技術スタック
 
-## Getting Started
+- **React 19** - 最新の React フレームワーク
+- **React Router 7** - フルスタック React フレームワーク
+- **TypeScript 5** - 型安全な開発
+- **TailwindCSS v4** - ユーティリティファースト CSS
+- **Vite** - 高速ビルドツール
+- **OpenWeatherMap API** - 天気データプロバイダー
 
-### Installation
+## セットアップ
 
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
+### 1. リポジトリのクローン
 
 ```bash
-npm run dev
+git clone <your-repo-url>
+cd weatherapp-rr
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
+### 2. 依存関係のインストール
 
 ```bash
-npm run build
+pnpm install
 ```
 
-## Deployment
+### 3. 環境変数の設定
 
-### Docker Deployment
+1. [OpenWeatherMap](https://openweathermap.org/api)で API キーを取得
+2. `.env`ファイルを作成し、API キーを設定：
 
-To build and run using Docker:
+```bash
+cp .env.example .env
+```
+
+`.env`ファイルを編集：
+
+```
+OPENWEATHER_API_KEY=your_api_key_here
+```
+
+### 4. 開発サーバーの起動
+
+```bash
+pnpm dev
+```
+
+アプリケーションは `http://localhost:5173` で利用できます。
+
+## 使い方
+
+1. トップページで都道府県を選択
+2. 「天気を確認」ボタンをクリック
+3. 選択した都道府県の詳細な天気情報が表示されます
+
+表示される情報：
+
+- 現在の気温と天気状況
+- 体感温度
+- 最高・最低気温
+- 湿度、気圧
+- 風速
+- 天気アイコン
+
+## 本番環境でのビルド
+
+```bash
+pnpm build
+```
+
+## プロジェクト構造
+
+```
+app/
+├── components/          # 再利用可能なReactコンポーネント
+│   ├── WeatherCard.tsx  # 天気情報表示カード
+│   ├── PrefectureSelect.tsx # 都道府県選択ドロップダウン
+│   └── LoadingSpinner.tsx   # ローディング・エラー表示
+├── routes/              # ページルート
+│   └── home.tsx         # メインページ
+├── types/               # TypeScript型定義
+│   └── weather.ts       # 天気関連の型
+├── utils/               # ユーティリティ関数
+│   └── weather.ts       # 天気API関連のヘルパー
+└── root.tsx            # アプリケーションルート
+```
+
+## API について
+
+このアプリケーションは[OpenWeatherMap API](https://openweathermap.org/api)を使用しています。
+
+- 無料プランで 1 日 1000 回まで利用可能
+- 現在の天気情報を取得
+- 日本語での天気説明に対応
+
+## ライセンス
+
+MIT License
 
 ```bash
 docker build -t my-app .
