@@ -45,11 +45,21 @@ export async function action({
 
 export default function Home({ actionData }: Route.ComponentProps) {
   const [selectedPrefecture, setSelectedPrefecture] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
   const submit = useSubmit();
   const navigation = useNavigation();
 
-  // React Routerのnavigation状態から派生値として計算
-  const isLoading = navigation.state === "submitting";
+  // デバッグ用: navigation.stateの状態を確認
+  console.log("Navigation state:", navigation.state);
+  console.log("Navigation object:", navigation);
+
+  // React Router v7では、useNavigationの動作が異なる可能性があるため、
+  // 複数の条件を組み合わせて確認
+  const isNavigationLoading =
+    navigation.state === "submitting" || navigation.state === "loading";
+
+  // 最終的なローディング状態（手動管理とnavigation状態の両方を考慮）
+  const finalIsLoading = isLoading || isNavigationLoading;
 
   // フォーム送信ハンドラ
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -59,15 +69,26 @@ export default function Home({ actionData }: Route.ComponentProps) {
       return;
     }
 
+    // 手動でローディング状態を設定
+    setIsLoading(true);
+
     // useSubmitを使用してプログラム的に送信
     const formData = new FormData();
     formData.append("prefecture", selectedPrefecture);
     submit(formData, { method: "post", action: "/" });
   };
 
+  // actionDataが変更された時にローディング状態をリセット
+  // （React公式の推奨パターン：レンダー中でのstate調整）
+  const [prevActionData, setPrevActionData] = useState(actionData);
+  if (actionData !== prevActionData) {
+    setPrevActionData(actionData);
+    setIsLoading(false);
+  }
+
   // エラーリセット
   const handleRetry = () => {
-    // React Routerが状態を管理するため、特別な処理は不要
+    setIsLoading(false);
   };
 
   return (
@@ -89,27 +110,27 @@ export default function Home({ actionData }: Route.ComponentProps) {
             <PrefectureSelect
               selectedPrefecture={selectedPrefecture}
               onPrefectureChange={setSelectedPrefecture}
-              isLoading={isLoading}
+              isLoading={finalIsLoading}
             />
 
             <button
               type="submit"
-              disabled={!selectedPrefecture || isLoading}
+              disabled={!selectedPrefecture || finalIsLoading}
               className="w-full mt-4 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              {isLoading ? "取得中..." : "天気を確認"}
+              {finalIsLoading ? "取得中..." : "天気を確認"}
             </button>
           </div>
         </form>
 
         {/* 結果表示エリア */}
         <div className="max-w-lg mx-auto">
-          {isLoading && <LoadingSpinner />}
+          {finalIsLoading && <LoadingSpinner />}
 
           {actionData && "error" in actionData && (
             <ErrorMessage message={actionData.error} onRetry={handleRetry} />
           )}
 
-          {actionData && "weatherData" in actionData && !isLoading && (
+          {actionData && "weatherData" in actionData && !finalIsLoading && (
             <WeatherCard weatherData={actionData.weatherData} />
           )}
         </div>
