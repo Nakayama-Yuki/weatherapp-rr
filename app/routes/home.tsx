@@ -75,7 +75,7 @@ export default function Home({ actionData }: Route.ComponentProps) {
     // useSubmitを使用してプログラム的に送信
     const formData = new FormData();
     formData.append("prefecture", selectedPrefecture);
-    submit(formData, { method: "post", action: "/" });
+    submit(formData, { method: "post" });
   };
 
   // actionDataが変更された時にローディング状態をリセット
