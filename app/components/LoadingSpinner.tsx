@@ -1,11 +1,42 @@
 /**
- * ローディングスピナーコンポーネント
+ * 天気カード用スケルトンUIコンポーネント
  */
-export function LoadingSpinner() {
+export function WeatherCardSkeleton() {
   return (
-    <div className="flex justify-center items-center p-8">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      <span className="ml-3 text-gray-600">天気情報を取得中...</span>
+    <div className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+      {/* ヘッダー部分 */}
+      <div className="text-center mb-6">
+        <div className="h-8 bg-gray-200 rounded-md w-3/4 mx-auto mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded-md w-1/2 mx-auto"></div>
+      </div>
+
+      {/* 天気アイコンと温度 */}
+      <div className="flex items-center justify-center mb-6">
+        <div className="w-16 h-16 bg-gray-200 rounded-full mr-4"></div>
+        <div>
+          <div className="h-10 bg-gray-200 rounded-md w-20 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded-md w-16"></div>
+        </div>
+      </div>
+
+      {/* 詳細情報 */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="text-center">
+          <div className="h-4 bg-gray-200 rounded-md w-full mb-2"></div>
+          <div className="h-6 bg-gray-200 rounded-md w-3/4 mx-auto"></div>
+        </div>
+        <div className="text-center">
+          <div className="h-4 bg-gray-200 rounded-md w-full mb-2"></div>
+          <div className="h-6 bg-gray-200 rounded-md w-3/4 mx-auto"></div>
+        </div>
+      </div>
+
+      {/* 追加情報 */}
+      <div className="mt-6 space-y-2">
+        <div className="h-4 bg-gray-200 rounded-md w-full"></div>
+        <div className="h-4 bg-gray-200 rounded-md w-5/6"></div>
+        <div className="h-4 bg-gray-200 rounded-md w-4/5"></div>
+      </div>
     </div>
   );
 }

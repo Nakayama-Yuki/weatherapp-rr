@@ -3,7 +3,7 @@ import type { Route } from "./+types/home";
 import { useFetcher } from "react-router";
 import { PrefectureSelect } from "~/components/PrefectureSelect";
 import { WeatherCard } from "~/components/WeatherCard";
-import { LoadingSpinner, ErrorMessage } from "~/components/LoadingSpinner";
+import { ErrorMessage, WeatherCardSkeleton } from "~/components/LoadingSpinner";
 import { getWeatherData } from "~/utils/weather";
 import type { WeatherData } from "~/types/weather";
 
@@ -49,14 +49,6 @@ export default function Home({}: Route.ComponentProps) {
 
   // fetcherの状態を使用してローディング状態を判定
   const isLoading = fetcher.state !== "idle";
-
-  // 楽観的UI: フォーム送信中は選択された都道府県を表示
-  const submittedPrefecture = fetcher.formData?.get("prefecture") as string;
-  const displayPrefecture =
-    submittedPrefecture ||
-    (fetcher.data && "prefecture" in fetcher.data
-      ? fetcher.data.prefecture
-      : "");
 
   // エラーリセット機能
   const handleRetry = () => {
@@ -104,14 +96,8 @@ export default function Home({}: Route.ComponentProps) {
 
         {/* 結果表示エリア */}
         <div className="max-w-lg mx-auto">
-          {/* 楽観的UI: 送信中は選択された都道府県を表示 */}
-          {isLoading && displayPrefecture && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <p className="text-blue-800 text-center">
-                📍 {displayPrefecture}の天気情報を取得中...
-              </p>
-            </div>
-          )}
+          {/* スケルトンUI: データ取得中に表示 */}
+          {isLoading && <WeatherCardSkeleton />}
 
           {/* エラーメッセージ */}
           {fetcher.data && "error" in fetcher.data && !isLoading && (
