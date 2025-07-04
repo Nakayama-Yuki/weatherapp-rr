@@ -3,7 +3,7 @@ import type { Route } from "./+types/home";
 import { useFetcher } from "react-router";
 import { PrefectureSelect } from "~/components/PrefectureSelect";
 import { WeatherCard } from "~/components/WeatherCard";
-import { ErrorMessage, WeatherCardSkeleton } from "~/components/UIComponents.tsx";
+import { ErrorMessage, WeatherCardSkeleton } from "~/components/UIComponents";
 import { getWeatherData } from "~/utils/weather";
 import type { WeatherData } from "~/types/weather";
 
