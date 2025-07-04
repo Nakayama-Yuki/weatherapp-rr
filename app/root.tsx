@@ -23,12 +23,6 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-// Root action to handle any POST requests that reach the root route
-export async function action({ request }: Route.ActionArgs) {
-  // Simply redirect to the home page if a POST request reaches the root
-  throw new Response(null, { status: 302, headers: { Location: "/" } });
-}
-
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">

@@ -87,7 +87,7 @@ app/
 ├── components/          # 再利用可能なReactコンポーネント
 │   ├── WeatherCard.tsx  # 天気情報表示カード
 │   ├── PrefectureSelect.tsx # 都道府県選択ドロップダウン
-│   └── LoadingSpinner.tsx   # ローディング・エラー表示
+│   └── UIComponents.tsx     # ローディング・エラー表示
 ├── routes/              # ページルート
 │   └── home.tsx         # メインページ
 ├── types/               # TypeScript型定義

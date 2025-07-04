@@ -90,13 +90,6 @@ export async function getWeatherData(prefecture: string): Promise<WeatherData> {
 }
 
 /**
- * 気温を摂氏から華氏に変換
- */
-export function celsiusToFahrenheit(celsius: number): number {
-  return (celsius * 9) / 5 + 32;
-}
-
-/**
  * 風速をm/sからkm/hに変換
  */
 export function mpsToKmh(mps: number): number {
