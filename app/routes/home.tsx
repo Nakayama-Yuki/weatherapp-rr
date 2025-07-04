@@ -49,10 +49,6 @@ export default function Home({ actionData }: Route.ComponentProps) {
   const submit = useSubmit();
   const navigation = useNavigation();
 
-  // デバッグ用: navigation.stateの状態を確認
-  console.log("Navigation state:", navigation.state);
-  console.log("Navigation object:", navigation);
-
   // React Router v7では、useNavigationの動作が異なる可能性があるため、
   // 複数の条件を組み合わせて確認
   const isNavigationLoading =
