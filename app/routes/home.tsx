@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Route } from "./+types/home";
-import { useSubmit, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { PrefectureSelect } from "~/components/PrefectureSelect";
 import { WeatherCard } from "~/components/WeatherCard";
 import { LoadingSpinner, ErrorMessage } from "~/components/LoadingSpinner";
@@ -43,48 +43,29 @@ export async function action({
   }
 }
 
-export default function Home({ actionData }: Route.ComponentProps) {
+export default function Home({}: Route.ComponentProps) {
   const [selectedPrefecture, setSelectedPrefecture] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
-  const submit = useSubmit();
-  const navigation = useNavigation();
+  const fetcher = useFetcher<ActionResult>();
 
-  // React Router v7では、useNavigationの動作が異なる可能性があるため、
-  // 複数の条件を組み合わせて確認
-  const isNavigationLoading =
-    navigation.state === "submitting" || navigation.state === "loading";
+  // fetcherの状態を使用してローディング状態を判定
+  const isLoading = fetcher.state !== "idle";
 
-  // 最終的なローディング状態（手動管理とnavigation状態の両方を考慮）
-  const finalIsLoading = isLoading || isNavigationLoading;
+  // 楽観的UI: フォーム送信中は選択された都道府県を表示
+  const submittedPrefecture = fetcher.formData?.get("prefecture") as string;
+  const displayPrefecture =
+    submittedPrefecture ||
+    (fetcher.data && "prefecture" in fetcher.data
+      ? fetcher.data.prefecture
+      : "");
 
-  // フォーム送信ハンドラ
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // デフォルトの送信を防ぐ
-
-    if (!selectedPrefecture) {
-      return;
-    }
-
-    // 手動でローディング状態を設定
-    setIsLoading(true);
-
-    // useSubmitを使用してプログラム的に送信
-    const formData = new FormData();
-    formData.append("prefecture", selectedPrefecture);
-    submit(formData, { method: "post" });
-  };
-
-  // actionDataが変更された時にローディング状態をリセット
-  // （React公式の推奨パターン：レンダー中でのstate調整）
-  const [prevActionData, setPrevActionData] = useState(actionData);
-  if (actionData !== prevActionData) {
-    setPrevActionData(actionData);
-    setIsLoading(false);
-  }
-
-  // エラーリセット
+  // エラーリセット機能
   const handleRetry = () => {
-    setIsLoading(false);
+    // 選択されている都道府県で再実行
+    if (selectedPrefecture) {
+      const formData = new FormData();
+      formData.append("prefecture", selectedPrefecture);
+      fetcher.submit(formData, { method: "post" });
+    }
   };
 
   return (
@@ -101,39 +82,48 @@ export default function Home({ actionData }: Route.ComponentProps) {
         </div>
 
         {/* 検索フォーム */}
-        <form method="post" action="/" onSubmit={handleSubmit} className="mb-8">
+        <fetcher.Form method="post" className="mb-8">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto">
             <PrefectureSelect
               selectedPrefecture={selectedPrefecture}
               onPrefectureChange={setSelectedPrefecture}
-              isLoading={finalIsLoading}
+              isLoading={isLoading}
             />
+
+            {/* 隠しフィールドで都道府県を送信 */}
+            <input type="hidden" name="prefecture" value={selectedPrefecture} />
 
             <button
               type="submit"
-              disabled={!selectedPrefecture || finalIsLoading}
+              disabled={!selectedPrefecture || isLoading}
               className="w-full mt-4 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              {finalIsLoading ? "取得中..." : "天気を確認"}
+              {isLoading ? "取得中..." : "天気を確認"}
             </button>
           </div>
-        </form>
+        </fetcher.Form>
 
         {/* 結果表示エリア */}
         <div className="max-w-lg mx-auto">
-          {finalIsLoading && <LoadingSpinner />}
-
-          {actionData && "error" in actionData && (
-            <ErrorMessage message={actionData.error} onRetry={handleRetry} />
+          {/* 楽観的UI: 送信中は選択された都道府県を表示 */}
+          {isLoading && displayPrefecture && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <p className="text-blue-800 text-center">
+                📍 {displayPrefecture}の天気情報を取得中...
+              </p>
+            </div>
           )}
 
-          {actionData && "weatherData" in actionData && !finalIsLoading && (
-            <WeatherCard weatherData={actionData.weatherData} />
+          {/* エラーメッセージ */}
+          {fetcher.data && "error" in fetcher.data && !isLoading && (
+            <ErrorMessage message={fetcher.data.error} onRetry={handleRetry} />
           )}
-        </div>
 
-        {/* フッター */}
-        <div className="text-center mt-12 text-blue-100">
-          <p className="text-sm">天気データ提供: OpenWeatherMap API</p>
+          {/* 天気データ表示 */}
+          {fetcher.data && "weatherData" in fetcher.data && !isLoading && (
+            <>
+              <WeatherCard weatherData={fetcher.data.weatherData} />
+            </>
+          )}
         </div>
       </div>
     </div>
