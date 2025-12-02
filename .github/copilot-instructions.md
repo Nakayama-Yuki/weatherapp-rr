@@ -1,391 +1,104 @@
-# Copilot Instructions for React Router v7 + React v19 + Vite Project
+# Copilot Instructions - 天気予報アプリ (weatherapp-rr)
 
-## 🚀 プロジェクト構成
-- **React Router v7** (App Router) - ファイルベースルーティング
-- **React v19** - 最新の並行機能とServer Components対応
-- **Vite** - 高速ビルドツール
-- **TypeScript v5** - 型安全性
-- **Tailwind CSS v4** - モダンCSS
-- **pnpm** - パッケージマネージャー
+日本の都道府県別天気予報アプリ。OpenWeatherMap APIを使用し、SSRで動作する。
 
-## 📁 ファイル構造とルーティング
+## 技術スタック
+- **React Router v7** + **React 19** + **Vite** + **TypeScript 5** + **Tailwind CSS v4**
+- **pnpm** をパッケージマネージャーとして使用
 
-### React Router v7 ファイルベースルーティング
-- `app/routes/` ディレクトリにルートファイルを配置
-- ルートファイルは関数エクスポートでコンポーネントを定義
-- `app/routes.ts` でルート設定を管理
-- 動的ルート: `app/routes/users.$userId.tsx`
-- レイアウト: `app/routes/_layout.tsx`
-- ネストしたルート: `app/routes/dashboard.tsx` + `app/routes/dashboard.settings.tsx`
-
-```typescript
-// app/routes/example.tsx
-import type { Route } from "./+types/example";
-
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Example Page" },
-    { name: "description", content: "Example description" }
-  ];
-}
-
-export function loader({}: Route.LoaderArgs) {
-  // データローディングロジック
-  return { data: "example" };
-}
-
-// 関数宣言を使用（const よりも推奨）
-export default function ExamplePage({ loaderData }: Route.ComponentProps) {
-  return (
-    <div className="p-4">
-      <h1>Example Page</h1>
-    </div>
-  );
-}
-```
-
-## ⚛️ React v19 ベストプラクティス
-
-### コンポーネント定義
-```typescript
-// ✅ 推奨: 関数宣言
-export default function MyComponent({ title }: { title: string }) {
-  return <h1>{title}</h1>;
-}
-
-// ❌ 非推奨: const宣言
-// const MyComponent = ({ title }: { title: string }) => <h1>{title}</h1>;
-```
-
-### React 19の新機能活用
-```typescript
-// use() フックでPromiseを直接処理
-import { use, Suspense } from "react";
-
-function UserProfile({ userPromise }: { userPromise: Promise<User> }) {
-  const user = use(userPromise); // React 19の新機能
-  return <div>{user.name}</div>;
-}
-
-// Server Actions (React Router v7では loader/action 関数で代替)
-export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
-  // フォーム処理ロジック
-  return redirect("/success");
-}
-```
-
-### 並行機能とTransitions
-```typescript
-import { useTransition, useState } from "react";
-
-function SearchComponent() {
-  const [query, setQuery] = useState("");
-  const [isPending, startTransition] = useTransition();
-
-  // 検索の状態更新を非緊急として扱う
-  function handleSearch(value: string) {
-    startTransition(() => {
-      setQuery(value);
-    });
-  }
-
-  return (
-    <div>
-      <input onChange={(e) => handleSearch(e.target.value)} />
-      {isPending && <div>検索中...</div>}
-    </div>
-  );
-}
-```
-
-## 🎨 Tailwind CSS v4 ベストプラクティス
-
-### 新しい@import構文
-```css
-/* app/app.css */
-@import "tailwindcss";
-
-/* カスタムスタイル */
-@layer utilities {
-  .scroll-smooth-fast {
-    scroll-behavior: smooth;
-    scroll-padding-top: 2rem;
-  }
-}
-```
-
-### コンポーネントでの使用
-```typescript
-// レスポンシブデザインとアクセシビリティを重視
-function Button({ children, variant = "primary" }: ButtonProps) {
-  const baseClasses = "px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
-  const variantClasses = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
-    secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500"
-  };
-
-  return (
-    <button className={`${baseClasses} ${variantClasses[variant]}`}>
-      {children}
-    </button>
-  );
-}
-```
-
-## 🔧 TypeScript v5 活用
-
-### 型定義
-```typescript
-// 厳密な型定義
-interface User {
-  readonly id: string;
-  name: string;
-  email: string;
-  createdAt: Date;
-}
-
-// ユーティリティ型の活用
-type CreateUserInput = Omit<User, 'id' | 'createdAt'>;
-type UserUpdate = Partial<Pick<User, 'name' | 'email'>>;
-```
-
-### React Router v7の型
-```typescript
-// app/routes/users.$userId.tsx
-import type { Route } from "./+types/users.$userId";
-
-export function loader({ params }: Route.LoaderArgs) {
-  // params.userId は自動的に型推論される
-  return getUserById(params.userId);
-}
-
-export default function UserDetail({ loaderData, params }: Route.ComponentProps) {
-  // loaderData と params の型は自動推論
-  return <div>{loaderData.name}</div>;
-}
-```
-
-## ⚡ Viteベストプラクティス
-
-### 環境変数
-```typescript
-// 環境変数の型定義
-interface ImportMetaEnv {
-  readonly VITE_API_URL: string;
-  readonly VITE_APP_TITLE: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
-
-// 使用例
-const apiUrl = import.meta.env.VITE_API_URL;
-```
-
-### 動的インポート
-```typescript
-// コード分割とlazy loading
-import { lazy, Suspense } from "react";
-
-const DashboardPage = lazy(() => import("./routes/dashboard"));
-
-function App() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <DashboardPage />
-    </Suspense>
-  );
-}
-```
-
-## 🎯 パフォーマンス最適化
-
-### メモ化
-```typescript
-import { memo, useMemo, useCallback } from "react";
-
-// React.memo でコンポーネントをメモ化
-const ExpensiveComponent = memo(function ExpensiveComponent({ data }: Props) {
-  // 重い計算をメモ化
-  const processedData = useMemo(() => {
-    return expensiveCalculation(data);
-  }, [data]);
-
-  // コールバック関数をメモ化
-  const handleClick = useCallback((id: string) => {
-    // クリック処理
-  }, []);
-
-  return <div>{processedData}</div>;
-});
-```
-
-### React Router v7でのデータ取得最適化
-```typescript
-// loader で並列データ取得
-export async function loader({ params }: Route.LoaderArgs) {
-  // 並列でデータを取得
-  const [user, posts] = await Promise.all([
-    getUserById(params.userId),
-    getPostsByUserId(params.userId)
-  ]);
-
-  return { user, posts };
-}
-```
-
-## ♿ アクセシビリティ
-
-### セマンティックHTML
-```typescript
-function Navigation() {
-  return (
-    <nav role="navigation" aria-label="メインナビゲーション">
-      <ul className="flex space-x-4">
-        <li>
-          <Link
-            to="/home"
-            className="text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2"
-            aria-current="page" // 現在のページの場合
-          >
-            ホーム
-          </Link>
-        </li>
-      </ul>
-    </nav>
-  );
-}
-```
-
-### フォームアクセシビリティ
-```typescript
-function ContactForm() {
-  return (
-    <form>
-      <div className="mb-4">
-        <label htmlFor="email" className="block text-sm font-medium mb-2">
-          メールアドレス *
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          aria-describedby="email-error"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <div id="email-error" className="text-red-600 text-sm mt-1" role="alert">
-          {/* エラーメッセージ */}
-        </div>
-      </div>
-    </form>
-  );
-}
-```
-
-## 🧪 テストベストプラクティス
-
-### コンポーネントテスト
-```typescript
-// React Testing Library推奨
-import { render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
-import Button from "./Button";
-
-test("ボタンがクリック可能である", async () => {
-  const handleClick = vi.fn();
-  render(<Button onClick={handleClick}>クリック</Button>);
-  
-  const button = screen.getByRole("button", { name: "クリック" });
-  await user.click(button);
-  
-  expect(handleClick).toHaveBeenCalledOnce();
-});
-```
-
-## 📦 パッケージ管理
-
-### pnpm使用
+## 開発コマンド
 ```bash
-# パッケージ追加
-pnpm add package-name
-
-# 開発依存関係
-pnpm add -D package-name
-
-# 全体更新
-pnpm update
+pnpm dev          # 開発サーバー起動 (localhost:5173)
+pnpm build        # 本番ビルド
+pnpm start        # 本番サーバー起動
+pnpm typecheck    # 型チェック (react-router typegen && tsc)
 ```
 
-## 🔒 セキュリティ
+## 環境変数
+`.env` ファイルに `OPENWEATHER_API_KEY` を設定（サーバーサイド専用、`process.env` でアクセス）
 
-### XSS対策
-```typescript
-// React は自動でエスケープするが、dangerouslySetInnerHTML は避ける
-function SafeComponent({ userInput }: { userInput: string }) {
-  return <div>{userInput}</div>; // 自動エスケープ
-}
+## アーキテクチャ
 
-// HTMLが必要な場合はサニタイズライブラリを使用
-import DOMPurify from "dompurify";
-
-function UnsafeComponent({ htmlContent }: { htmlContent: string }) {
-  const cleanHTML = DOMPurify.sanitize(htmlContent);
-  return <div dangerouslySetInnerHTML={{ __html: cleanHTML }} />;
-}
+### ディレクトリ構造
+```
+app/
+├── routes/          # ルートファイル（app/routes.ts で設定管理）
+├── components/      # 再利用可能UIコンポーネント
+├── types/           # TypeScript型定義
+└── utils/           # ユーティリティ関数・API呼び出し
 ```
 
-## 📋 コーディング規約
+### データフロー（fetcher パターン）
+このプロジェクトでは `useFetcher` + `action` パターンを使用してフォーム送信とデータ取得を行う：
 
-### 命名規則
-- **変数・関数**: camelCase (`userName`, `handleSubmit`)
-- **コンポーネント・クラス**: PascalCase (`UserProfile`, `ApiClient`)
-- **定数**: UPPER_SNAKE_CASE (`API_ENDPOINT`, `MAX_RETRIES`)
-- **ファイル名**: kebab-case またはPascalCase (`user-profile.tsx`, `UserProfile.tsx`)
+```tsx
+// app/routes/home.tsx のパターン
+export async function action({ request }: Route.ActionArgs): Promise<ActionResult> {
+  const formData = await request.formData();
+  const prefecture = formData.get("prefecture") as string;
+  const weatherData = await getWeatherData(prefecture);  // サーバーサイドで実行
+  return { weatherData, prefecture };
+}
 
-### コメント
-```typescript
-/**
- * ユーザー情報を取得する関数
- * @param userId - ユーザーID
- * @returns ユーザー情報のPromise
- */
-async function fetchUser(userId: string): Promise<User> {
-  // APIからユーザー情報を取得
-  const response = await fetch(`/api/users/${userId}`);
-  
-  if (!response.ok) {
-    // エラーハンドリング
-    throw new Error(`ユーザー取得に失敗: ${response.status}`);
-  }
-  
-  return response.json();
+export default function Home() {
+  const fetcher = useFetcher<ActionResult>();
+  const isLoading = fetcher.state !== "idle";
+  // fetcher.Form で送信、fetcher.data で結果取得
 }
 ```
 
-## 🚀 デプロイメント
+### 都道府県→都市名マッピング
+`app/utils/weather.ts` の `PREFECTURE_TO_CITY` で日本語都道府県名を英語都市名に変換してAPIに送信
 
-### 本番ビルド最適化
-```typescript
-// vite.config.ts
-import { defineConfig } from "vite";
-import { reactRouter } from "@react-router/dev/vite";
+## コンポーネント設計パターン
 
-export default defineConfig({
-  plugins: [reactRouter()],
-  build: {
-    // チャンク分割でパフォーマンス向上
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ["react", "react-dom", "react-router"],
-        },
-      },
-    },
-  },
-});
+### ルートコンポーネント
+```tsx
+import type { Route } from "./+types/[route-name]";
+
+export function meta({}: Route.MetaArgs) { /* SEOメタ情報 */ }
+export async function action({}: Route.ActionArgs) { /* データ変更 */ }
+export default function RouteName({}: Route.ComponentProps) { /* UI */ }
 ```
 
-これらのベストプラクティスに従うことで、保守性が高く、パフォーマンスに優れた現代的なReactアプリケーションを構築できます。
+### UIコンポーネント（`app/components/`）
+- **関数宣言**を使用（アロー関数よりも推奨）
+- Props は interface で型定義
+- Tailwind CSS クラスで直接スタイリング
+- スケルトンUI（`WeatherCardSkeleton`）でローディング状態を表示
+
+### 型定義（`app/types/weather.ts`）
+OpenWeatherMap APIレスポンスの厳密な型定義。新しいAPI統合時は同様のパターンで型を定義する。
+
+## UI/スタイリング規約
+
+### Tailwind CSS パターン
+- グラデーション背景: `bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600`
+- カード: `bg-white rounded-xl shadow-lg p-6`
+- ボタン: `bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 ... focus:ring-2`
+- グリッドレイアウト: `grid grid-cols-2 gap-4`
+
+### アクセシビリティ
+- `htmlFor` と `id` の紐付け（`PrefectureSelect.tsx` 参照）
+- disabled 状態の視覚的フィードバック
+- `focus:ring-2 focus:ring-offset-2` でフォーカス表示
+
+## 新機能追加時のガイドライン
+
+### 新しいルート追加
+1. `app/routes/[name].tsx` を作成
+2. `app/routes.ts` にルートを追加
+3. `Route` 型は `./+types/[name]` から自動生成される
+
+### 外部API統合
+1. `app/types/` に型定義を追加
+2. `app/utils/` にAPI呼び出し関数を追加
+3. ルートの `loader` または `action` でサーバーサイド実行
+
+### コンポーネント追加
+1. `app/components/` に PascalCase でファイル作成
+2. Props interface を定義
+3. 名前付きエクスポートを使用
+
+## Docker デプロイ
+マルチステージビルドで最適化済み（`Dockerfile` 参照）。本番イメージは `npm run start` で起動。
