@@ -61,7 +61,7 @@ export default function Home({}: Route.ComponentProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600">
+    <div className="min-h-screen bg-linear-to-br from-blue-400 via-blue-500 to-blue-600">
       <div className="container mx-auto px-4 py-8">
         {/* ヘッダー */}
         <div className="text-center mb-8">
