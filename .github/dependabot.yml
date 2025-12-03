@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # npm dependencies (main package.json)
+  # npmパッケージの依存関係を管理
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
