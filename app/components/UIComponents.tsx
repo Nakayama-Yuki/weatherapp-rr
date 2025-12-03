@@ -53,7 +53,7 @@ export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
   return (
     <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md mx-auto">
       <div className="flex items-center">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <svg
             className="h-5 w-5 text-red-400"
             viewBox="0 0 20 20"
