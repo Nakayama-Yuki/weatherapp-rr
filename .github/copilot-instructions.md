@@ -73,7 +73,7 @@ OpenWeatherMap APIレスポンスの厳密な型定義。新しいAPI統合時�
 ## UI/スタイリング規約
 
 ### Tailwind CSS パターン
-- グラデーション背景: `bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600`
+- グラデーション背景: `bg-linear-to-br from-blue-400 via-blue-500 to-blue-600`
 - カード: `bg-white rounded-xl shadow-lg p-6`
 - ボタン: `bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 ... focus:ring-2`
 - グリッドレイアウト: `grid grid-cols-2 gap-4`
