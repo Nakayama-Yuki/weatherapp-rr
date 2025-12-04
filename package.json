@@ -5,12 +5,13 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
+    "start": "node -r dotenv/config node_modules/@react-router/serve/dist/cli.js ./build/server/index.js",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@react-router/node": "^7.10.0",
     "@react-router/serve": "^7.10.0",
+    "dotenv": "^17.2.3",
     "isbot": "^5.1.32",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
