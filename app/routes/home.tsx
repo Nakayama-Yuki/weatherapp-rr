@@ -1,6 +1,10 @@
 import { useState } from "react";
 import type { Route } from "./+types/home";
-import { useFetcher } from "react-router";
+import {
+  isRouteErrorResponse,
+  useFetcher,
+  useRouteError,
+} from "react-router";
 import { PrefectureSelect } from "~/components/PrefectureSelect";
 import { WeatherCard } from "~/components/WeatherCard";
 import { ErrorMessage, WeatherCardSkeleton } from "~/components/UIComponents";
@@ -111,6 +115,73 @@ export default function Home({}: Route.ComponentProps) {
             </>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md text-center">
+          <h1 className="text-6xl font-bold text-red-500 mb-4">
+            {error.status}
+          </h1>
+          <p className="text-2xl font-semibold text-gray-800 mb-4">
+            {error.statusText}
+          </p>
+          {error.data && (
+            <p className="text-gray-600 mb-6">{String(error.data)}</p>
+          )}
+          <a
+            href="/"
+            className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+          >
+            ホームに戻る
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (error instanceof Error) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md">
+          <h1 className="text-3xl font-bold text-red-500 mb-4">エラーが発生しました</h1>
+          <p className="text-gray-700 mb-4">{error.message}</p>
+          {import.meta.env.DEV && (
+            <pre className="bg-gray-100 p-4 rounded-lg text-xs overflow-auto max-h-48 text-gray-800 mb-4">
+              {error.stack}
+            </pre>
+          )}
+          <a
+            href="/"
+            className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+          >
+            ホームに戻る
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-linear-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md text-center">
+        <h1 className="text-3xl font-bold text-red-500 mb-4">予期しないエラーが発生しました</h1>
+        <p className="text-gray-700 mb-6">
+          アプリケーションでエラーが発生しました。しばらく待ってからもう一度お試しください。
+        </p>
+        <a
+          href="/"
+          className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+        >
+          ホームに戻る
+        </a>
       </div>
     </div>
   );
