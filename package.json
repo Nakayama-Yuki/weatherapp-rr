@@ -9,24 +9,24 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@react-router/node": "^7.15.1",
-    "@react-router/serve": "^7.15.1",
-    "@vitejs/plugin-rsc": "^0.5.26",
+    "@react-router/node": "^7.17.0",
+    "@react-router/serve": "^7.17.0",
+    "@vitejs/plugin-rsc": "^0.5.27",
     "dotenv": "^17.4.2",
-    "isbot": "^5.1.40",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "react-router": "^7.15.1"
+    "isbot": "^5.1.42",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router": "^7.17.0"
   },
   "devDependencies": {
-    "@react-router/dev": "^7.15.1",
+    "@react-router/dev": "^7.17.0",
     "@tailwindcss/vite": "^4.3.0",
-    "@types/node": "^24.12.4",
-    "@types/react": "^19.2.15",
+    "@types/node": "^24.13.1",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.14",
-    "vitest": "^4.1.7"
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   }
 }
