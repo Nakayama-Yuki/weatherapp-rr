@@ -1,5 +1,17 @@
 version: 2
 updates:
+  # Dockerfile のイメージ
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # GitHub Actions versions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+
   # npmパッケージの依存関係を管理
   - package-ecosystem: "npm"
     directory: "/"
