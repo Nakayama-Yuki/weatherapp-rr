@@ -117,7 +117,7 @@ app/
 
 ## Docker の現状
 
-`Dockerfile` は固定したpnpmと `pnpm-lock.yaml` を使って依存解決・ビルド・起動を行います。Docker CIでイメージのビルドとHTTP起動を検証します。ローカルでDockerが使えない場合、実行確認は未検証として扱ってください。
+`Dockerfile` は固定したpnpmと `pnpm-lock.yaml` で依存解決・ビルドを行い、本番コンテナは非rootユーザーでNode.jsを直接起動します。Docker CIでイメージのビルドとHTTP起動を検証します。ローカルでDockerが使えない場合、実行確認は未検証として扱ってください。
 
 ## CIの実行手順
 
