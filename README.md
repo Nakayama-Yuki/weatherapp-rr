@@ -117,4 +117,19 @@ app/
 
 ## Docker の現状
 
-`Dockerfile` は `package-lock.json` と npm を前提にしていますが、現在のリポジトリは `pnpm-lock.yaml` を使用します。そのまま実行できる構成とは扱わず、利用前にパッケージ管理と Dockerfile を揃え、ビルド・起動を確認してください。
+`Dockerfile` は固定したpnpmと `pnpm-lock.yaml` を使って依存解決・ビルド・起動を行います。Docker CIでイメージのビルドとHTTP起動を検証します。ローカルでDockerが使えない場合、実行確認は未検証として扱ってください。
+
+## CIの実行手順
+
+`packageManager` に合わせてpnpm 12.21.0を使用します。CIは型・lint、ビルド、必要なブラウザの準備、本番E2Eの順で実行し、同じブランチの古い実行をキャンセルします。
+
+```bash
+pnpm install --frozen-lockfile
+pnpm ci:check
+pnpm build
+pnpm test:e2e
+```
+
+ブラウザ未導入の場合は `pnpm exec playwright install --with-deps chromium` を実行してください。ワークフローは [共通CI生成スクリプト](https://github.com/Nakayama-Yuki/calculator/blob/1c00b03232e04a008f1ddeb39e6c7a78deed1127/tools/web-ci/README.md) から生成します。
+
+通常E2Eのサーバーは `tests/mock-fetch.mjs` でAPI応答を固定します。通常の開発・本番起動は実APIを使います。

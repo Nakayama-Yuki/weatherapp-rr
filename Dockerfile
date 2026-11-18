@@ -1,22 +1,25 @@
-FROM node:lts-alpine AS development-dependencies-env
-COPY . /app
+FROM node:lts-alpine AS base
+RUN npm install --global pnpm@12.21.0
 WORKDIR /app
-RUN npm ci
 
-FROM node:lts-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
-RUN npm ci --omit=dev
+FROM base AS dependencies
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
-FROM node:lts-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
-RUN npm run build
+FROM dependencies AS build
+COPY . .
+RUN pnpm build
 
-FROM node:lts-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
-WORKDIR /app
-CMD ["npm", "run", "start"]
+FROM base AS production-dependencies
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+
+FROM base AS runner
+ENV NODE_ENV=production
+ENV PORT=3000
+COPY --from=production-dependencies /app/node_modules ./node_modules
+COPY --from=build /app/build ./build
+COPY package.json ./package.json
+USER node
+EXPOSE 3000
+CMD ["pnpm", "start"]
