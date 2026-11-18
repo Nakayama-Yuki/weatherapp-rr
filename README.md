@@ -82,7 +82,7 @@ pnpm start
 
 `pnpm start` は `dotenv/config` で `.env` を読み込みます。開発サーバーでは dotenv の読込を明示していないため、上記の起動例では Node.js の `--env-file` でキーを読み込ませます。`pnpm dev` を直接使う場合は、起動前にシェルの `OPENWEATHER_API_KEY` を設定してください。
 
-lint・自動テストのスクリプトはありません。画面変更時は都道府県選択、取得中、成功、失敗と再試行を確認します。API キーはサーバー側で使用します。
+`pnpm ci:check` で型チェックとBiomeのlintを実行します。画面変更時は開発サーバーで都道府県選択、取得中、成功、失敗と再試行を確認します。API キーはサーバー側で使用します。
 
 本番ビルドの出力は `build/` です。
 
@@ -121,15 +121,12 @@ app/
 
 ## CIの実行手順
 
-`packageManager` に合わせてpnpm 12.21.0を使用します。CIは型・lint、ビルド、必要なブラウザの準備、本番E2Eの順で実行し、同じブランチの古い実行をキャンセルします。
+`packageManager` に合わせてpnpm 12.21.0を使用します。CIは型・lint、本番ビルドの順で実行し、同じブランチの古い実行をキャンセルします。
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm ci:check
 pnpm build
-pnpm test:e2e
 ```
 
-ブラウザ未導入の場合は `pnpm exec playwright install --with-deps chromium` を実行してください。ワークフローは [.github/workflows/](.github/workflows/) のYAMLを直接編集します。
-
-通常E2Eのサーバーは `tests/mock-fetch.mjs` でAPI応答を固定します。通常の開発・本番起動は実APIを使います。
+ワークフローは [.github/workflows/](.github/workflows/) のYAMLを直接編集します。

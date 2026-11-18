@@ -8,7 +8,6 @@
     "start": "NODE_ENV=production node -r dotenv/config node_modules/@react-router/serve/dist/cli.js ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "lint": "biome lint",
-    "test:e2e": "playwright test",
     "ci:check": "pnpm typecheck && pnpm lint --error-on-warnings"
   },
   "dependencies": {
@@ -23,7 +22,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.8",
-    "@playwright/test": "^1.65.1",
     "@react-router/dev": "^8.5.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^24.19.2",

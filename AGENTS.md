@@ -25,7 +25,7 @@ pnpm build
 pnpm start
 ```
 
-`pnpm start` は `dotenv/config` で `.env` を読み込む。開発時は環境変数を明示して起動する（README を参照）。`pnpm ci:check` で型チェックとBiomeのlintを実行する。`pnpm build` → `pnpm test:e2e` で、固定API応答による都道府県選択・成功・失敗・再試行導線を検証する。
+`pnpm start` は `dotenv/config` で `.env` を読み込む。開発時は環境変数を明示して起動する（README を参照）。`pnpm ci:check` で型チェックとBiomeのlintを実行し、`pnpm build` で本番ビルドを確認する。都道府県選択・成功・失敗・再試行導線は開発サーバーで確認する。
 
 ## Docker
 

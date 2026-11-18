@@ -2,10 +2,7 @@
 build
 node_modules
 README.md
-# Local credentials and test output
+# Local credentials
 .env
 .env.*
 .git
-playwright-report
-playwright-security-report
-test-results
