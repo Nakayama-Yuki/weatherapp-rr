@@ -1,0 +1,43 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [main]
+    paths: [Dockerfile, .dockerignore, .npmrc, init.sql, package.json, pnpm-lock.yaml, pnpm-workspace.yaml, 'app/**', 'src/**', 'public/**', '*config*', '.github/workflows/docker.yml']
+  pull_request:
+    branches: [main]
+    paths: [Dockerfile, .dockerignore, .npmrc, init.sql, package.json, pnpm-lock.yaml, pnpm-workspace.yaml, 'app/**', 'src/**', 'public/**', '*config*', '.github/workflows/docker.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build production image
+        run: docker build --tag web-app-ci .
+      - name: Verify runtime starts
+        run: |
+          docker run --detach --name web-app-ci -p 3000:3000 \
+            -e DATABASE_URL=postgresql://ci_user:ci_password@127.0.0.1:5432/ci_test \
+            -e DATABASE_HOST=127.0.0.1 -e DATABASE_PORT=5432 \
+            -e DATABASE_USER=ci_user -e DATABASE_PASSWORD=ci_password -e DATABASE_NAME=ci_test \
+            -e AUTH_SECRET=github-actions-test-secret web-app-ci
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://localhost:3000/ >/dev/null; then exit 0; fi
+            if [ "$(docker inspect -f '{{.State.Running}}' web-app-ci)" != true ]; then break; fi
+            sleep 2
+          done
+          docker logs web-app-ci
+          exit 1
+      - name: Clean up
+        if: ${{ always() }}
+        run: docker rm --force web-app-ci || true

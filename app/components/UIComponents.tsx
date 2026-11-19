@@ -55,6 +55,7 @@ export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
       <div className="flex items-center">
         <div className="shrink-0">
           <svg
+            aria-hidden="true"
             className="h-5 w-5 text-red-400"
             viewBox="0 0 20 20"
             fill="currentColor">
@@ -72,6 +73,7 @@ export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
       {onRetry && (
         <div className="mt-3">
           <button
+            type="button"
             onClick={onRetry}
             className="text-sm bg-red-100 text-red-800 px-3 py-2 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500">
             再試行
