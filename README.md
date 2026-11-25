@@ -82,7 +82,7 @@ pnpm start
 
 `pnpm start` は `dotenv/config` で `.env` を読み込みます。開発サーバーでは dotenv の読込を明示していないため、上記の起動例では Node.js の `--env-file` でキーを読み込ませます。`pnpm dev` を直接使う場合は、起動前にシェルの `OPENWEATHER_API_KEY` を設定してください。
 
-lint・自動テストのスクリプトはありません。画面変更時は都道府県選択、取得中、成功、失敗と再試行を確認します。API キーはサーバー側で使用します。
+`pnpm ci:check` で型チェックとBiomeのlintを実行します。画面変更時は開発サーバーで都道府県選択、取得中、成功、失敗と再試行を確認します。API キーはサーバー側で使用します。
 
 本番ビルドの出力は `build/` です。
 
@@ -117,4 +117,16 @@ app/
 
 ## Docker の現状
 
-`Dockerfile` は `package-lock.json` と npm を前提にしていますが、現在のリポジトリは `pnpm-lock.yaml` を使用します。そのまま実行できる構成とは扱わず、利用前にパッケージ管理と Dockerfile を揃え、ビルド・起動を確認してください。
+`Dockerfile` は固定したpnpmと `pnpm-lock.yaml` で依存解決・ビルドを行い、本番コンテナは非rootユーザーでNode.jsを直接起動します。Docker CIでイメージのビルドとHTTP起動を検証します。ローカルでDockerが使えない場合、実行確認は未検証として扱ってください。
+
+## CIの実行手順
+
+`packageManager` に合わせてpnpm 12.21.0を使用します。CIは型・lint、本番ビルドの順で実行し、同じブランチの古い実行をキャンセルします。
+
+```bash
+pnpm install --frozen-lockfile
+pnpm ci:check
+pnpm build
+```
+
+ワークフローは [.github/workflows/](.github/workflows/) のYAMLを直接編集します。

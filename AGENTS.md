@@ -25,11 +25,11 @@ pnpm build
 pnpm start
 ```
 
-`pnpm start` は `dotenv/config` で `.env` を読み込む。開発時は環境変数を明示して起動する（README を参照）。lint・自動テストのスクリプトはない。UI 変更時は都道府県選択・取得中・成功・失敗・再試行を確認し、未実行の確認は理由を報告する。
+`pnpm start` は `dotenv/config` で `.env` を読み込む。開発時は環境変数を明示して起動する（README を参照）。`pnpm ci:check` で型チェックとBiomeのlintを実行し、`pnpm build` で本番ビルドを確認する。都道府県選択・成功・失敗・再試行導線は開発サーバーで確認する。
 
 ## Docker
 
-現在の `Dockerfile` は npm と `package-lock.json` を前提にするが、リポジトリのロックファイルは `pnpm-lock.yaml`。そのままデプロイ可能と説明せず、利用前にパッケージ管理とビルド・起動の整合性を検証する。
+`Dockerfile` は `pnpm-lock.yaml` と固定したpnpmを使う。Docker CIでイメージのビルドとHTTP起動を検証する。ローカルでDockerを実行できない場合は、その制限を報告する。
 
 ## 文書の管理
 

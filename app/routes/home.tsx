@@ -11,7 +11,7 @@ import { ErrorMessage, WeatherCardSkeleton } from "~/components/UIComponents";
 import { getWeatherData } from "~/utils/weather";
 import type { WeatherData } from "~/types/weather";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "天気予報アプリ" },
     {
@@ -47,7 +47,7 @@ export async function action({
   }
 }
 
-export default function Home({}: Route.ComponentProps) {
+export default function Home() {
   const [selectedPrefecture, setSelectedPrefecture] = useState<string>("");
   const fetcher = useFetcher<ActionResult>();
 
@@ -110,9 +110,7 @@ export default function Home({}: Route.ComponentProps) {
 
           {/* 天気データ表示 */}
           {fetcher.data && "weatherData" in fetcher.data && !isLoading && (
-            <>
-              <WeatherCard weatherData={fetcher.data.weatherData} />
-            </>
+            <WeatherCard weatherData={fetcher.data.weatherData} />
           )}
         </div>
       </div>
